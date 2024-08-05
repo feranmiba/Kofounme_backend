@@ -1,10 +1,24 @@
 import db from "../db/db.js";
-import dotenv from "dotenv"
+import dotenv from "dotenv";
+import multer from "multer";
 
 dotenv.config()
 
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'uploads/'); 
+    },
+    filename: function (req, file, cb) {
+      cb(null, Date.now() + '-' + file.originalname); 
+    }
+});
+  
+const upload = multer({ storage: storage });
+  
+
 export const createProfile = async (req, res) => {
-    const { user_id, first_name, last_name, pronouns, city, tagline, picture, role, looking, business, skil, interest } = req.body;
+    const { user_id, first_name, last_name, pronouns, city, tagline, role, looking, business, skil, interest } = req.body;
+    const picture = req.file ? req.file.path : null; 
 
     try {
       const data =  await db.query("INSERT INTO user_profile (user_id, first_name, last_name, pronouns, city, tagline, picture, role, looking_for, business, skil, interest ) VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12 )",
@@ -21,6 +35,8 @@ export const createProfile = async (req, res) => {
     }
 
 };
+
+export const uploadMiddleware = upload.single('picture');
 
 export const getProfile = async (req, res) => {
     const user_id = req.params.id;
