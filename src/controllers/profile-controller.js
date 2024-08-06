@@ -17,24 +17,28 @@ const upload = multer({ storage: storage });
   
 
 export const createProfile = async (req, res) => {
-    const { user_id, first_name, last_name, pronouns, city, tagline, role, looking, business, skil, interest } = req.body;
+    const { email, first_name, last_name, pronouns, city, tagline, role, looking, business, skil, interest } = req.body;
     const picture = req.file ? req.file.path : null; 
 
     try {
-      const data =  await db.query("INSERT INTO user_profile (user_id, first_name, last_name, pronouns, city, tagline, picture, role, looking_for, business, skil, interest ) VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12 )",
-            [user_id, first_name, last_name, pronouns, city, tagline, picture, role, looking, business, skil, interest  ]
-        )
+        const result = await db.query("SELECT id FROM usersigned WHERE email = $1", [email]);
+        const user_id = result.rows[0].id;
 
-        if(data) {
-            res.status(200).json({ message: "profile created succesfully" })
+        const data = await db.query("INSERT INTO user_profile (user_id, first_name, last_name, pronouns, city, tagline, picture, role, looking_for, business_into, skill, interest) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *",
+            [user_id, first_name, last_name, pronouns, city, tagline, picture, role, looking, business, skil, interest]
+        );
+
+        if (data) {
+            res.status(200).json({ profile: data.rows[0], message: "Profile created successfully" });
         } else {
-            res.status(400).json({ message: "User not authenticated" })
+            res.status(400).json({ message: "User not authenticated" });
         }
     } catch (error) {
-        res.status(500).json({ message: "Internal Server error. Try again later" })
+        console.error('Error creating profile:', error); // Log error details
+        res.status(500).json({ message: "Internal Server error. Try again later" });
     }
-
 };
+
 
 export const uploadMiddleware = upload.single('picture');
 
