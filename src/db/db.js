@@ -10,9 +10,9 @@ const db = new pg.Client({
     password: process.env.PG_PASSWORD,
     host: process.env.PG_HOST,
     port: process.env.PG_PORT,
-    // ssl: {
-    //     rejectUnauthorized: true, 
-    // },
+    ssl: {
+        rejectUnauthorized: true, 
+    },
 })
 
 export default db;
