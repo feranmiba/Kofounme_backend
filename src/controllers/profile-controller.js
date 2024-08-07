@@ -27,7 +27,7 @@ export const createProfile = async (req, res) => {
           }
         const user_id = result.rows[0].id;
 
-        const data = await db.query("INSERT INTO user_profile (user_id, first_name, last_name, pronouns, city, tagline, picture, role, looking_for, business_into, skill, interest) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *",
+        const data = await db.query("INSERT INTO user_profile (user_id, first_name, last_name, pronouns, city, tagline, picture, role, looking_for, business_into, skill, interest) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)",
             [user_id, first_name, last_name, pronouns, city, tagline, picture, role, looking_for, business, skill, interest]
         );
 
