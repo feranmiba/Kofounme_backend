@@ -17,15 +17,18 @@ const upload = multer({ storage: storage });
   
 
 export const createProfile = async (req, res) => {
-    const { email, first_name, last_name, pronouns, city, tagline, role, looking, business, skil, interest } = req.body;
+    const { email, first_name, last_name, pronouns, city, tagline, role, looking_for, business, skill, interest } = req.body;
     const picture = req.file ? req.file.path : null; 
 
     try {
         const result = await db.query("SELECT id FROM usersigned WHERE email = $1", [email]);
+        if (result.rows.length === 0) {
+            return res.status(400).json({ message: "User not found" });
+          }
         const user_id = result.rows[0].id;
 
         const data = await db.query("INSERT INTO user_profile (user_id, first_name, last_name, pronouns, city, tagline, picture, role, looking_for, business_into, skill, interest) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *",
-            [user_id, first_name, last_name, pronouns, city, tagline, picture, role, looking, business, skil, interest]
+            [user_id, first_name, last_name, pronouns, city, tagline, picture, role, looking_for, business, skill, interest]
         );
 
         if (data) {
