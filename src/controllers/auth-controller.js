@@ -43,17 +43,21 @@ export const signUp = async (req, res) => {
 
 
 export const login = async (req, res) => {
-    const profile = req.body;
+    const { email, password } = req.body;
     try {
-        const usermailExist = await db.query("SELECT * FROM usersigned WHERE email = $1", [profile.email]);
+        const usermailExist = await db.query("SELECT * FROM usersigned WHERE email = $1", [email]);
         if (usermailExist.rows.length > 0) {
             const user = usermailExist.rows[0];
-            bcrypt.compare(profile.password, user.password, (err, result) => {
+            bcrypt.compare(password, user.password, async (err, result) => {
                 if (err) {
                     res.status(500).send("Internal error, please try again");
                 } else if (result) {
-                    const acessToken = jwt.sign(profile, process.env.JWT_SECRET, {expiresIn: "20m"})
-                    res.status(200).json({profile: {id:user.id, email: user.email, phone: user.phone_number}, accessToken: acessToken})
+                    const userData = await db.query("SELECT * FROM user_profile WHERE user_id = $1", [user.id])
+                    const profile = userData.rows[0]
+                    if(userData) {
+                        const acessToken = jwt.sign(profile, process.env.JWT_SECRET, {expiresIn: "20m"})
+                        res.status(200).json({userID: profile, accessToken: acessToken})
+                    }
                 } else {
                     res.status(400).json({ message: "Incorrect password. Try again"});
                 }
