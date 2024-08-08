@@ -12,10 +12,17 @@ dotenv.config()
 const app = express();
 const port = process.env.PORT || 3000;
 
+var corsOption = {
+    origin : "https://kofoundme.netlify.app",
+    optionsSuccessStatus: 200
+}
+
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors(corsOption));
+
 app.use('/uploads', express.static('uploads'));
-app.use(bodyParser.json());
+app.use(express.json({ limit: '10mb' }));  // Increase the limit as needed
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 db.connect();
 
