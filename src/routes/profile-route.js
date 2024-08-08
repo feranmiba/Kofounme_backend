@@ -18,6 +18,6 @@ const storage = multer.diskStorage({
 const router = express.Router();
 
 router.post("/create-profile", uploadMiddleware, createProfile);
-router.get("/user-profile/:id", getProfile);
+router.get("/user-profile", getProfile);
 
 export default router;
