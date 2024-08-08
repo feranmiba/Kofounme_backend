@@ -31,7 +31,6 @@ export const createProfile = async (req, res) => {
             [user_id, first_name, last_name, pronouns, city, tagline, picture, role, looking_for, business, skill, interest]
         );
         
-
         if (data) {
             console.log(data.rows[0])
             res.status(200).json({ userID: data.rows[0], message: "Profile created successfully" });
